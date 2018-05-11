@@ -1,5 +1,6 @@
 export CRAYPE_LINK_TYPE=dynamic
 module load daint-mc
+module load CMake
 module switch PrgEnv-cray PrgEnv-gnu
 module load Boost
 module load hwloc
