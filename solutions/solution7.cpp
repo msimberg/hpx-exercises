@@ -1,57 +1,43 @@
 #include <hpx/hpx_main.hpp>
-#include <hpx/include/async.hpp>
 #include <hpx/include/iostreams.hpp>
-#include <hpx/include/lcos.hpp>
-#include <hpx/include/parallel_partition.hpp>
+#include <hpx/include/parallel_executors.hpp>
+#include <hpx/include/parallel_generate.hpp>
+#include <hpx/include/parallel_reduce.hpp>
+#include <hpx/include/threads.hpp>
 #include <hpx/include/util.hpp>
 
-#include <memory>
-
-struct node {
-    std::shared_ptr<node> left;
-    std::shared_ptr<node> right;
-    double value;
-
-    node(double value) : value(value) {};
-    node(std::shared_ptr<node> left, std::shared_ptr<node> right)
-        : left(left), right(right), value(0.0) {};
-};
-
-template <typename Transformer, typename Reducer>
-hpx::future<double> tree_transform_reduce(std::shared_ptr<node> n,
-    Transformer t, Reducer r)
-{
-    assert(n);
-
-    if (!n->left || !n->right)
-    {
-        return hpx::make_ready_future(t(n->value));
-    }
-
-    hpx::future<double> left_result =
-        hpx::async(&tree_transform_reduce<Transformer, Reducer>, n->left, t, r);
-    hpx::future<double> right_result =
-        hpx::async(&tree_transform_reduce<Transformer, Reducer>, n->right, t, r);
-
-    return hpx::dataflow(hpx::util::unwrapping(r), left_result, right_result);
-}
+#include <algorithm>
+#include <cstddef>
+#include <functional>
+#include <random>
 
 int main()
 {
-    auto n =
-        std::make_shared<node>(
-            std::make_shared<node>(
-                std::make_shared<node>(7.1),
-                std::make_shared<node>(
-                    std::make_shared<node>(3.2),
-                    std::make_shared<node>(9.111))),
-            std::make_shared<node>(
-                std::make_shared<node>(54.23),
-                std::make_shared<node>(1.0)));
+    std::vector<double> v(100000000);
 
-    auto result = tree_transform_reduce(n,
-        [](double x) { return x * x; },
-        [](double x, double y) { return x + y; });
+    std::mt19937 gen(0);
+    std::uniform_real_distribution<double> dis(0.0, 1.0);
 
-    hpx::cout << "futurized result is " << result.get() << hpx::endl;
+    hpx::cout << "generating... " << hpx::flush;
+    hpx::parallel::generate(hpx::parallel::execution::seq,
+        std::begin(v), std::end(v), [&dis, &gen]() { return dis(gen); });
+    hpx::cout << "done." << hpx::endl;
+
+    hpx::cout << "reducing... " << hpx::flush;
+
+    auto reduce_threads = std::min(
+        hpx::this_thread::get_pool()->get_os_thread_count(), std::size_t(4));
+    auto exec = hpx::parallel::execution::par.on(
+        hpx::parallel::execution::local_queue_executor(reduce_threads));
+
+    hpx::util::high_resolution_timer timer;
+    double result = hpx::parallel::reduce(exec,
+        std::begin(v), std::end(v), 0.0, std::plus<>());
+    const double reduce_duration = timer.elapsed();
+    hpx::cout << "done." << hpx::endl;
+
+    hpx::cout << "result is " << result << hpx::endl;
+    hpx::cout << "reduction took " << reduce_duration << " s" << hpx::endl;
+
+    return 0;
 }

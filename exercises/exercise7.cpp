@@ -1,55 +1,36 @@
 #include <hpx/hpx_main.hpp>
-#include <hpx/include/async.hpp>
 #include <hpx/include/iostreams.hpp>
-#include <hpx/include/lcos.hpp>
-#include <hpx/include/parallel_partition.hpp>
+#include <hpx/include/parallel_executors.hpp>
+#include <hpx/include/parallel_generate.hpp>
+#include <hpx/include/parallel_reduce.hpp>
+#include <hpx/include/threads.hpp>
 #include <hpx/include/util.hpp>
 
-#include <memory>
-
-struct node {
-    std::shared_ptr<node> left;
-    std::shared_ptr<node> right;
-    double value;
-
-    node(double value) : value(value) {};
-    node(std::shared_ptr<node> left, std::shared_ptr<node> right)
-        : left(left), right(right), value(0.0) {};
-};
-
-template <typename Transformer, typename Reducer>
-double tree_transform_reduce(std::shared_ptr<node> n, Transformer t, Reducer r)
-{
-    assert(n);
-
-    if (!n->left && !n->right)
-    {
-        return t(n->value);
-    }
-
-    double left_result = tree_transform_reduce(n->left, t, r);
-    double right_result = tree_transform_reduce(n->right, t, r);
-
-    return r(left_result, right_result);
-}
+#include <algorithm>
+#include <cstddef>
+#include <functional>
+#include <random>
 
 int main()
 {
-    auto n =
-        std::make_shared<node>(
-            std::make_shared<node>(
-                std::make_shared<node>(7.1),
-                std::make_shared<node>(
-                    std::make_shared<node>(3.2),
-                    std::make_shared<node>(9.111))
-                ),
-            std::make_shared<node>(
-                std::make_shared<node>(54.23),
-                std::make_shared<node>(1.0)));
+    std::vector<double> v(100000000);
 
-    double result = tree_transform_reduce(n,
-        [](double x) { return x * x; },
-        [](double x, double y) { return x + y; });
+    std::mt19937 gen(0);
+    std::uniform_real_distribution<double> dis(0.0, 1.0);
+
+    hpx::cout << "generating... " << hpx::flush;
+    for (std::size_t i = 0; i < v.size(); ++i) { v[i] = dis(gen); }
+    hpx::cout << "done." << hpx::endl;
+
+    hpx::cout << "reducing... " << hpx::flush;
+    hpx::util::high_resolution_timer timer;
+    double result = 0.0;
+    for (std::size_t i = 0; i < v.size(); ++i) { result += v[i]; }
+    const double reduce_duration = timer.elapsed();
+    hpx::cout << "done." << hpx::endl;
 
     hpx::cout << "result is " << result << hpx::endl;
+    hpx::cout << "reduction took " << reduce_duration << " s" << hpx::endl;
+
+    return 0;
 }
