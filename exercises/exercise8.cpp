@@ -2,53 +2,40 @@
 #include <hpx/include/async.hpp>
 #include <hpx/include/iostreams.hpp>
 #include <hpx/include/lcos.hpp>
+#include <hpx/include/parallel_generate.hpp>
+#include <hpx/include/parallel_for_loop.hpp>
 #include <hpx/include/util.hpp>
-
-#include <memory>
-
-struct node {
-    std::shared_ptr<node> left;
-    std::shared_ptr<node> right;
-    double value;
-
-    node(double value) : value(value) {};
-    node(std::shared_ptr<node> left, std::shared_ptr<node> right)
-        : left(left), right(right), value(0.0) {};
-};
-
-template <typename Transformer, typename Reducer>
-double tree_transform_reduce(std::shared_ptr<node> n, Transformer t, Reducer r)
-{
-    assert(n);
-
-    if (!n->left && !n->right)
-    {
-        return t(n->value);
-    }
-
-    double left_result = tree_transform_reduce(n->left, t, r);
-    double right_result = tree_transform_reduce(n->right, t, r);
-
-    return r(left_result, right_result);
-}
 
 int main()
 {
-    auto n =
-        std::make_shared<node>(
-            std::make_shared<node>(
-                std::make_shared<node>(7.1),
-                std::make_shared<node>(
-                    std::make_shared<node>(3.2),
-                    std::make_shared<node>(9.111))
-                ),
-            std::make_shared<node>(
-                std::make_shared<node>(54.23),
-                std::make_shared<node>(1.0)));
+    const int n = 10000000;
 
-    double result = tree_transform_reduce(n,
-        [](double x) { return x * x; },
-        [](double x, double y) { return x + y; });
+    std::vector<double> v(n);
+    std::vector<double> w(n);
 
-    hpx::cout << "result is " << result << hpx::endl;
+    std::mt19937 gen(0);
+    std::uniform_real_distribution<double> dis(0.0, 1.0);
+
+    hpx::cout << "generating... " << hpx::flush;
+    hpx::parallel::generate(hpx::parallel::execution::seq,
+        std::begin(v), std::end(v), [&dis, &gen]() { return dis(gen); });
+    hpx::cout << "done." << hpx::endl;
+
+    hpx::cout << "filtering... " << hpx::flush;
+
+    hpx::util::high_resolution_timer timer;
+    for (std::size_t i = 0; i < n; ++i)
+    {
+        w[i] = (v[i - 1] + v[i] + v[i + 1]) / 3.0;
+    }
+
+    w[0] = (v[n - 1] + v[0] + v[1]) / 3.0;
+    w[n - 1] = (v[n - 2] + v[n - 1] + v[0]) / 3.0;
+
+    const double filter_duration = timer.elapsed();
+    hpx::cout << "done." << hpx::endl;
+
+    hpx::cout << "filter took " << filter_duration << " s" << hpx::endl;
+
+    return 0;
 }
