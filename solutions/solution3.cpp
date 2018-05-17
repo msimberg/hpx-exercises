@@ -22,4 +22,6 @@ int main()
 
     // when_all produces a future<container<future<T>>>
     hpx::when_all(f, g).then(&fun);
+
+    return 0;
 }

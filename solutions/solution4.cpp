@@ -29,4 +29,6 @@ int main(int, char**)
 
     // when_all produces a future<container<future<T>>>
     hpx::when_all(v).then(&fun);
+
+    return 0;
 }

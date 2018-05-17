@@ -6,4 +6,6 @@ int main()
 {
     auto f = hpx::make_ready_future<int>(3);
     hpx::cout << f << hpx::endl;
+
+    return 0;
 }

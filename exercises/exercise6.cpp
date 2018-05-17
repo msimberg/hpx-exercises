@@ -30,4 +30,6 @@ int main()
     hpx::when_all(f, g).then(&funX);
     hpx::dataflow(&funX, f, g);
     hpx::dataflow(hpx::util::unwrapping(&funX), f, g);
+
+    return 0;
 }

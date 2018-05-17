@@ -9,4 +9,6 @@ int main()
     // future<T> cannot be copied, only moved
     f.then([](hpx::shared_future<void>) { hpx::cout << "Hello from first lambda" << hpx::endl; });
     f.then([](hpx::shared_future<void>) { hpx::cout << "Hello from second lambda" << hpx::endl; });
+
+    return 0;
 }

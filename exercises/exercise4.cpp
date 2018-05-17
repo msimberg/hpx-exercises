@@ -28,4 +28,6 @@ int main()
     }
 
     hpx::when_all(v).then(&fun);
+
+    return 0;
 }

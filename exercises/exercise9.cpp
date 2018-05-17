@@ -51,4 +51,6 @@ int main()
         [](double x, double y) { return x + y; });
 
     hpx::cout << "result is " << result << hpx::endl;
+
+    return 0;
 }

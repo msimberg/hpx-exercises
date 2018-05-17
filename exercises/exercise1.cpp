@@ -8,4 +8,6 @@ int main()
 
     f.then([](hpx::future<void>) { hpx::cout << "Hello from first lambda" << hpx::endl; });
     f.then([](hpx::future<void>) { hpx::cout << "Hello from second lambda" << hpx::endl; });
+
+    return 0;
 }

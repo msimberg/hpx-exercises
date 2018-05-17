@@ -11,4 +11,6 @@ int main()
 {
     auto f = hpx::async([](){ return 3.14; });
     f.then(&fun);
+
+    return 0;
 }

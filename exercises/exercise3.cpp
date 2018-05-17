@@ -16,4 +16,6 @@ int main()
     auto g = hpx::async([]() -> int { std::cout << "2\n"; return 42; });
 
     hpx::when_all(f, g).then(&fun);
+
+    return 0;
 }

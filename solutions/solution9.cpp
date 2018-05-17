@@ -53,4 +53,6 @@ int main()
         [](double x, double y) { return x + y; });
 
     hpx::cout << "futurized result is " << result.get() << hpx::endl;
+
+    return 0;
 }
