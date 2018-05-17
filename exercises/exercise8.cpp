@@ -24,7 +24,7 @@ int main()
     hpx::cout << "filtering... " << hpx::flush;
 
     hpx::util::high_resolution_timer timer;
-    for (std::size_t i = 0; i < n; ++i)
+    for (std::size_t i = 1; i < n - 1; ++i)
     {
         w[i] = (v[i - 1] + v[i] + v[i + 1]) / 3.0;
     }
