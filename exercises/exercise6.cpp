@@ -4,6 +4,9 @@
 #include <hpx/include/lcos.hpp>
 #include <hpx/include/util.hpp>
 
+// This program does not compile. Replace the uses of funX below with a fitting
+// function (i.e. fun1, fun2 or fun3).
+
 void fun1(double x, int y)
 {
     hpx::cout << "hello from fun1" << hpx::endl;

@@ -6,6 +6,10 @@
 #include <hpx/include/parallel_for_loop.hpp>
 #include <hpx/include/util.hpp>
 
+// This program compiles and runs correctly. Try to use a parallel HPX algorithm
+// instead of the for loop for filtering. The includes contain hints on what you
+// could use.
+
 int main()
 {
     const int n = 10000000;

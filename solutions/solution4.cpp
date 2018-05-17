@@ -27,7 +27,7 @@ int main(int, char**)
         v.push_back(hpx::async([i]() { return i; }));
     }
 
-    // when_all produces a future<container<future<T>>>
+    // when_all produces a future<vector<future<size_t>>>.
     hpx::when_all(v).then(&fun);
 
     return 0;

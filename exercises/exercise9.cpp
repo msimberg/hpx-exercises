@@ -6,6 +6,11 @@
 
 #include <memory>
 
+// This program compiles and runs correctly. Try to use futures, async, dataflow
+// etc. to parallelize the code. Note that this example is too small to see any
+// benefits from doing so, but forces you to use the primitives in HPX for
+// creating a DAG of tasks.
+
 struct node {
     std::shared_ptr<node> left;
     std::shared_ptr<node> right;

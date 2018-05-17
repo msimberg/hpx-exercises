@@ -4,6 +4,9 @@
 #include <hpx/include/lcos.hpp>
 #include <hpx/include/util.hpp>
 
+// This program does not compile. Try to fix it. There are multiple correct
+// solutions.
+
 void fun(hpx::future<double> f, hpx::future<int> g)
 {
     hpx::cout << "The value of f is " << f.get();

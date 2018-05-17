@@ -10,7 +10,7 @@ void fun(hpx::future<double> x)
 int main()
 {
     auto f = hpx::async([](){ return 3.14; });
-    // The function in then takes the future as an argument
+    // The function in then takes the future as an argument.
     f.then(&fun);
 
     return 0;

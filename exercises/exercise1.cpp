@@ -2,6 +2,8 @@
 #include <hpx/include/async.hpp>
 #include <hpx/include/iostreams.hpp>
 
+// This program compiles, but fails at runtime. Try to fix it.
+
 int main()
 {
     auto f = hpx::async([](){});

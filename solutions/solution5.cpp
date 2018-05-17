@@ -5,7 +5,7 @@
 int main()
 {
     auto f = hpx::make_ready_future<int>(3);
-    // hpx iostream errors are verbose
+    // HPX iostream errors are very verbose. Look at the first error message.
     hpx::cout << f.get() << hpx::endl;
 
     return 0;

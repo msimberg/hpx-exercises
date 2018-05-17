@@ -2,6 +2,8 @@
 #include <hpx/include/async.hpp>
 #include <hpx/include/iostreams.hpp>
 
+// This program does not compile. Try to fix it.
+
 void fun(double x)
 {
     hpx::cout << "The value of x is " << x << hpx::endl;

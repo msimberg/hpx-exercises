@@ -6,6 +6,9 @@
 
 #include <cstddef>
 
+// This program does not compile. Try to fix it. There are multiple correct
+// solutions.
+
 void fun(hpx::future<std::vector<std::size_t>> f)
 {
     hpx::cout << "This week's lucky numbers are:";

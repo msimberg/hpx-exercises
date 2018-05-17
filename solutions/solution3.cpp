@@ -20,7 +20,8 @@ int main()
     auto f = hpx::async([]() -> double { std::cout << "1\n"; return 3.14; });
     auto g = hpx::async([]() -> int { std::cout << "2\n"; return 42; });
 
-    // when_all produces a future<container<future<T>>>
+    // when_all produces a future<tuple<future<double>, future<int>>>. dataflow
+    // can also be used to avoid having to take a tuple as an argument in fun.
     hpx::when_all(f, g).then(&fun);
 
     return 0;

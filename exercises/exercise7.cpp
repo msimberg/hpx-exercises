@@ -11,6 +11,10 @@
 #include <functional>
 #include <random>
 
+// This program compiles and runs correctly. Try to use a parallel HPX algorithm
+// instead of the for loop for reduction. The includes contain hints on what you
+// could use.
+
 int main()
 {
     std::vector<double> v(100000000);
